@@ -15,6 +15,8 @@ struct DayView: View {
     @State private var showCategoryManager = false
     @State private var isSelectionMode = false
     @State private var selectedBlocks: Set<UUID> = []
+    @State private var showResetAlert = false
+    @State private var showSettings = false
     
     var body: some View {
         NavigationView {
@@ -99,6 +101,12 @@ struct DayView: View {
                     } else {
                         Menu {
                             Button(action: {
+                                showSettings = true
+                            }) {
+                                Label("Paramètres", systemImage: "gearshape")
+                            }
+                            
+                            Button(action: {
                                 showCategoryManager = true
                             }) {
                                 Label("Gérer les catégories", systemImage: "square.grid.2x2")
@@ -113,7 +121,7 @@ struct DayView: View {
                             }
                             
                             Button(action: {
-                                viewModel.resetDay()
+                                showResetAlert = true
                             }) {
                                 Label("Réinitialiser", systemImage: "arrow.counterclockwise")
                             }
@@ -147,6 +155,17 @@ struct DayView: View {
         }
         .sheet(isPresented: $showCategoryManager) {
             CategoryManagerView(categoryManager: categoryManager)
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView(viewModel: viewModel)
+        }
+        .alert("Réinitialiser la journée ?", isPresented: $showResetAlert) {
+            Button("Annuler", role: .cancel) { }
+            Button("Réinitialiser", role: .destructive) {
+                viewModel.resetDay()
+            }
+        } message: {
+            Text("Cette action supprimera toutes les catégories assignées aux blocs de cette journée.")
         }
     }
     

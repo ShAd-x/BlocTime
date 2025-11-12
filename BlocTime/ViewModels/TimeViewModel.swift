@@ -18,13 +18,22 @@ class TimeViewModel: ObservableObject {
     /// Currently selected date for viewing/editing
     @Published var selectedDate: Date = Date()
     
+    /// Time interval for blocks (15, 30, or 60 minutes)
+    @Published var blockInterval: BlockInterval = .thirtyMinutes
+    
     // Reference to CategoryManager
     let categoryManager: CategoryManager
     
     // MARK: - Constants
     
     private let userDefaultsKey = "allDaysData"
-    private let blocksPerDay = 48 // 24 hours * 2 (30-minute blocks)
+    private let intervalKey = "blockInterval"
+    
+    // MARK: - Computed Properties
+    
+    var blocksPerDay: Int {
+        return blockInterval.blocksPerDay
+    }
     
     // MARK: - Computed Properties
     
@@ -43,6 +52,7 @@ class TimeViewModel: ObservableObject {
     
     init() {
         self.categoryManager = CategoryManager()
+        loadBlockInterval()
         loadAllDaysData()
         ensureBlocksExist(for: selectedDate)
     }
@@ -87,7 +97,8 @@ class TimeViewModel: ObservableObject {
             hour: blocks[index].hour,
             minute: blocks[index].minute,
             categoryId: categoryId,
-            date: blocks[index].date
+            date: blocks[index].date,
+            duration: blocks[index].duration
         )
         
         allDaysData[dateKey] = blocks
@@ -109,7 +120,8 @@ class TimeViewModel: ObservableObject {
                     hour: blocks[index].hour,
                     minute: blocks[index].minute,
                     categoryId: categoryId,
-                    date: blocks[index].date
+                    date: blocks[index].date,
+                    duration: blocks[index].duration
                 )
             }
         }
@@ -129,6 +141,18 @@ class TimeViewModel: ObservableObject {
     
     /// Generate blocks for the selected date if they don't exist
     func generateDayBlocks() {
+        let dateKey = dateToKey(selectedDate)
+        allDaysData[dateKey] = generateBlocks(for: selectedDate)
+        saveAllDaysData()
+        objectWillChange.send()
+    }
+    
+    /// Change the block interval and regenerate all blocks for the current day
+    func changeBlockInterval(_ newInterval: BlockInterval) {
+        blockInterval = newInterval
+        saveBlockInterval()
+        
+        // Regenerate blocks for the selected date
         let dateKey = dateToKey(selectedDate)
         allDaysData[dateKey] = generateBlocks(for: selectedDate)
         saveAllDaysData()
@@ -216,14 +240,20 @@ class TimeViewModel: ObservableObject {
         }
     }
     
-    /// Generate 48 blocks (24h * 2) of 30 minutes each for a specific date
+    /// Generate blocks for a specific date based on the current interval
     private func generateBlocks(for date: Date) -> [TimeBlock] {
         var blocks: [TimeBlock] = []
         let dayStart = Calendar.current.startOfDay(for: date)
+        let minutes = blockInterval.minutesInHour()
         
         for hour in 0...23 {
-            for minute in [0, 30] {
-                let block = TimeBlock(hour: hour, minute: minute, date: dayStart)
+            for minute in minutes {
+                let block = TimeBlock(
+                    hour: hour,
+                    minute: minute,
+                    date: dayStart,
+                    duration: blockInterval.rawValue
+                )
                 blocks.append(block)
             }
         }
@@ -258,5 +288,16 @@ class TimeViewModel: ObservableObject {
             return
         }
         allDaysData = decoded
+    }
+    
+    private func saveBlockInterval() {
+        UserDefaults.standard.set(blockInterval.rawValue, forKey: intervalKey)
+    }
+    
+    private func loadBlockInterval() {
+        if let savedInterval = UserDefaults.standard.value(forKey: intervalKey) as? Int,
+           let interval = BlockInterval(rawValue: savedInterval) {
+            blockInterval = interval
+        }
     }
 }
