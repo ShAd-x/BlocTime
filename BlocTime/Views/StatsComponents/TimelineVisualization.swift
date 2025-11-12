@@ -60,7 +60,7 @@ struct TimelineVisualization: View {
                         let blockColor = block.categoryId.flatMap { categoryManager.getCategory(by: $0)?.color } ?? Color.gray.opacity(0.2)
                         Rectangle()
                             .fill(blockColor)
-                            .frame(width: geometry.size.width / 48)
+                            .frame(width: geometry.size.width / CGFloat(blocks.count))
                     }
                 }
                 .cornerRadius(20)

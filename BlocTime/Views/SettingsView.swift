@@ -50,7 +50,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Intervalle de temps")
                 } footer: {
-                    Text("Choisissez la durée de chaque bloc de temps. Changer cet intervalle réinitialisera la journée actuelle.")
+                    Text("Choisissez la durée de chaque bloc de temps. Attention : changer cet intervalle supprimera TOUTES vos données existantes.")
                 }
             }
             .navigationTitle("Paramètres")
@@ -73,7 +73,7 @@ struct SettingsView: View {
                     }
                 }
             } message: {
-                Text("Cette action réinitialisera la journée actuelle avec le nouvel intervalle de temps.")
+                Text("Cette action supprimera TOUTES vos données de catégories pour tous les jours. Cette action est irréversible.")
             }
         }
     }

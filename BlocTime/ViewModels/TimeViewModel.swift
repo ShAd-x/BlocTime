@@ -147,10 +147,13 @@ class TimeViewModel: ObservableObject {
         objectWillChange.send()
     }
     
-    /// Change the block interval and regenerate all blocks for the current day
+    /// Change the block interval and regenerate all blocks for ALL days
     func changeBlockInterval(_ newInterval: BlockInterval) {
         blockInterval = newInterval
         saveBlockInterval()
+        
+        // Reset ALL existing days data since they have incompatible block counts
+        allDaysData.removeAll()
         
         // Regenerate blocks for the selected date
         let dateKey = dateToKey(selectedDate)

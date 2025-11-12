@@ -10,13 +10,16 @@ import SwiftUI
 /// Card displaying unassigned time blocks information
 struct UnassignedTimeCard: View {
     let unassignedBlocks: Int
+    let totalBlocksInPeriod: Int
+    let blockDurationMinutes: Int
     
     var hours: Double {
-        Double(unassignedBlocks) / 2.0
+        Double(unassignedBlocks * blockDurationMinutes) / 60.0
     }
     
     var assignedPercentage: Int {
-        Int((Double(48 - unassignedBlocks) / 48.0) * 100)
+        guard totalBlocksInPeriod > 0 else { return 0 }
+        return Int((Double(totalBlocksInPeriod - unassignedBlocks) / Double(totalBlocksInPeriod)) * 100)
     }
     
     var body: some View {
@@ -68,6 +71,10 @@ struct UnassignedTimeCard: View {
 }
 
 #Preview {
-    UnassignedTimeCard(unassignedBlocks: 15)
-        .padding()
+    UnassignedTimeCard(
+        unassignedBlocks: 15,
+        totalBlocksInPeriod: 48,
+        blockDurationMinutes: 30
+    )
+    .padding()
 }

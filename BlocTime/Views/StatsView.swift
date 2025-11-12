@@ -42,13 +42,14 @@ struct StatsView: View {
     
     var unassignedBlocks: Int {
         let blocksInPeriod: Int
+        let blocksPerDay = viewModel.blocksPerDay
         switch statsPeriod {
         case .day:
-            blocksInPeriod = 48
+            blocksInPeriod = blocksPerDay
         case .week:
-            blocksInPeriod = 48 * 7
+            blocksInPeriod = blocksPerDay * 7
         case .month:
-            blocksInPeriod = getDaysInMonth() * 48
+            blocksInPeriod = getDaysInMonth() * blocksPerDay
         }
         return blocksInPeriod - totalBlocks
     }
@@ -77,7 +78,18 @@ struct StatsView: View {
             
             // Unassigned time counter
             if unassignedBlocks > 0 {
-                UnassignedTimeCard(unassignedBlocks: unassignedBlocks)
+                UnassignedTimeCard(
+                    unassignedBlocks: unassignedBlocks,
+                    totalBlocksInPeriod: {
+                        let blocksPerDay = viewModel.blocksPerDay
+                        switch statsPeriod {
+                        case .day: return blocksPerDay
+                        case .week: return blocksPerDay * 7
+                        case .month: return getDaysInMonth() * blocksPerDay
+                        }
+                    }(),
+                    blockDurationMinutes: viewModel.blockInterval.rawValue
+                )
             }
             
             // Timeline visualization (only for day view)
@@ -132,7 +144,7 @@ struct StatsView: View {
                 BarChartView(stats: stats, categoryManager: categoryManager)
             }
             
-            Text("Total: \(totalBlocks) blocs (\(String(format: "%.1f", Double(totalBlocks) / 2.0))h)")
+            Text("Total: \(totalBlocks) blocs (\(String(format: "%.1f", Double(totalBlocks * viewModel.blockInterval.rawValue) / 60.0))h)")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
