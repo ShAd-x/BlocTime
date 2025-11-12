@@ -24,8 +24,14 @@ struct StatRow: View {
             percentageLabel
         }
         .padding()
-        .background(Color.white)
-        .cornerRadius(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.primary.opacity(0.05))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+        )
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
     
