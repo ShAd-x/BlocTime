@@ -34,9 +34,8 @@ class CategoryManager: ObservableObject {
         }
     }
     
-    /// Delete a category (only custom ones, not defaults)
+    /// Delete a category
     func deleteCategory(_ category: CustomCategory) {
-        guard !category.isDefault else { return }
         categories.removeAll { $0.id == category.id }
         saveCategories()
     }

@@ -25,12 +25,10 @@ struct CategoryManagerView: View {
                                 editingCategory = category
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                if !category.isDefault {
-                                    Button(role: .destructive) {
-                                        categoryManager.deleteCategory(category)
-                                    } label: {
-                                        Label("Supprimer", systemImage: "trash")
-                                    }
+                                Button(role: .destructive) {
+                                    categoryManager.deleteCategory(category)
+                                } label: {
+                                    Label("Supprimer", systemImage: "trash")
                                 }
                             }
                     }
@@ -162,25 +160,35 @@ struct CategoryEditorView: View {
                 }
                 
                 Section("Couleur") {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 15) {
-                        ForEach(colorPalette.indices, id: \.self) { index in
-                            Circle()
-                                .fill(colorPalette[index])
-                                .frame(width: 50, height: 50)
-                                .overlay(
-                                    Circle()
-                                        .stroke(Color.white, lineWidth: 3)
-                                        .opacity(colorPalette[index] == selectedColor ? 1 : 0)
-                                )
-                                .onTapGesture {
-                                    selectedColor = colorPalette[index]
-                                }
+                    // ColorPicker pour sélection personnalisée
+                    ColorPicker("Sélecteur de couleur", selection: $selectedColor, supportsOpacity: false)
+                    
+                    // Palette de couleurs rapides
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Couleurs rapides")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 15) {
+                            ForEach(colorPalette.indices, id: \.self) { index in
+                                Circle()
+                                    .fill(colorPalette[index])
+                                    .frame(width: 50, height: 50)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Color.white, lineWidth: 3)
+                                            .opacity(colorPalette[index] == selectedColor ? 1 : 0)
+                                    )
+                                    .onTapGesture {
+                                        selectedColor = colorPalette[index]
+                                    }
+                            }
                         }
                     }
                     .padding(.vertical, 8)
                 }
                 
-                if isEditing && category?.isDefault == false {
+                if isEditing {
                     Section {
                         Button(role: .destructive) {
                             if let category = category {

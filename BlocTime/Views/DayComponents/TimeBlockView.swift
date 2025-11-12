@@ -38,7 +38,7 @@ struct TimeBlockView: View {
     
     private var timeLabel: some View {
         Text(block.displayText)
-            .font(.system(.body, design: .monospaced))
+            .font(.system(.body))
             .frame(width: 120, alignment: .leading)
     }
     
