@@ -141,7 +141,7 @@ struct StatsView: View {
             if chartType == .pie {
                 PieChartView(stats: stats, categoryManager: categoryManager, totalBlocks: totalBlocks)
             } else {
-                BarChartView(stats: stats, categoryManager: categoryManager)
+                BarChartView(stats: stats, categoryManager: categoryManager, blockDurationMinutes: viewModel.blockInterval.rawValue)
             }
             
             Text("Total: \(totalBlocks) blocs (\(String(format: "%.1f", Double(totalBlocks * viewModel.blockInterval.rawValue) / 60.0))h)")
@@ -165,7 +165,8 @@ struct StatsView: View {
                     StatRow(
                         category: category,
                         blocks: item.value,
-                        percentage: Double(item.value) / Double(totalBlocks)
+                        percentage: Double(item.value) / Double(totalBlocks),
+                        blockDurationMinutes: viewModel.blockInterval.rawValue
                     )
                 }
             }

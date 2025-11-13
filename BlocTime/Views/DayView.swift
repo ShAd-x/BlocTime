@@ -49,6 +49,9 @@ struct DayView: View {
                                         selectedBlocks: $selectedBlocks,
                                         onBlockTap: { block in
                                             handleBlockTap(block)
+                                        },
+                                        onBlockLongPress: { block in
+                                            handleBlockLongPress(block)
                                         }
                                     )
                                 }
@@ -186,6 +189,14 @@ struct DayView: View {
             }
         } else {
             selectedBlock = block
+        }
+    }
+    
+    // Handle block long press to enter selection mode
+    private func handleBlockLongPress(_ block: TimeBlock) {
+        if !isSelectionMode {
+            isSelectionMode = true
+            selectedBlocks.insert(block.id)
         }
     }
     

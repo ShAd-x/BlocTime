@@ -12,9 +12,10 @@ struct StatRow: View {
     let category: CustomCategory
     let blocks: Int
     let percentage: Double
+    let blockDurationMinutes: Int
     
     var hours: Double {
-        Double(blocks) / 2.0
+        Double(blocks * blockDurationMinutes) / 60.0
     }
     
     var body: some View {
@@ -86,6 +87,6 @@ struct StatRow: View {
 
 #Preview {
     let categoryManager = CategoryManager()
-    StatRow(category: categoryManager.categories.first!, blocks: 16, percentage: 0.33)
+    StatRow(category: categoryManager.categories.first!, blocks: 16, percentage: 0.33, blockDurationMinutes: 30)
         .padding()
 }

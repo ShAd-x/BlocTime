@@ -12,6 +12,7 @@ import Charts
 struct BarChartView: View {
     let stats: [UUID: Int]
     let categoryManager: CategoryManager
+    let blockDurationMinutes: Int
     
     var sortedStats: [(UUID, Int)] {
         stats.sorted(by: { $0.value > $1.value })
@@ -22,14 +23,14 @@ struct BarChartView: View {
             ForEach(sortedStats, id: \.0) { categoryId, count in
                 if let category = categoryManager.getCategory(by: categoryId) {
                     BarMark(
-                        x: .value("Heures", Double(count) / 2.0),
+                        x: .value("Heures", Double(count * blockDurationMinutes) / 60.0),
                         y: .value("Catégorie", category.name)
                     )
                     .foregroundStyle(category.color)
                     .annotation(position: .trailing) {
                         HStack(spacing: 4) {
                             Text(category.emoji)
-                            Text(String(format: "%.1fh", Double(count) / 2.0))
+                            Text(String(format: "%.1fh", Double(count * blockDurationMinutes) / 60.0))
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
@@ -57,6 +58,6 @@ struct BarChartView: View {
 #Preview {
     let categoryManager = CategoryManager()
     let stats = [categoryManager.categories[0].id: 10, categoryManager.categories[1].id: 5, categoryManager.categories[2].id: 8]
-    BarChartView(stats: stats, categoryManager: categoryManager)
+    BarChartView(stats: stats, categoryManager: categoryManager, blockDurationMinutes: 30)
         .padding()
 }

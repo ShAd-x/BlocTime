@@ -15,6 +15,7 @@ struct PeriodSection: View {
     let isSelectionMode: Bool
     @Binding var selectedBlocks: Set<UUID>
     let onBlockTap: (TimeBlock) -> Void
+    let onBlockLongPress: (TimeBlock) -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -52,6 +53,9 @@ struct PeriodSection: View {
                 .onTapGesture {
                     onBlockTap(block)
                 }
+                .onLongPressGesture {
+                    onBlockLongPress(block)
+                }
             }
         }
     }
@@ -64,7 +68,8 @@ struct PeriodSection: View {
         categoryManager: CategoryManager(),
         isSelectionMode: false,
         selectedBlocks: .constant([]),
-        onBlockTap: { _ in }
+        onBlockTap: { _ in },
+        onBlockLongPress: { _ in }
     )
     .padding()
 }
